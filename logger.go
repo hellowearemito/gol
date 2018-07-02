@@ -1,4 +1,4 @@
-package golw
+package golr
 
 import (
 	"encoding/json"
