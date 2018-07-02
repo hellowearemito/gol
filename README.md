@@ -1,6 +1,6 @@
 # Golr
 
-Golr is a logger what send the log's message (with type and targets) to redis.
+Golr is a logger what send the given type of message to redis. We can define the targets. After the sending an other service can decode/encode and send the given messages to the correct platform.
 
 ## Getting Started
 
@@ -27,7 +27,7 @@ if err != nil {
 message := Message{
   Type: Communication,
   Targets: []Target{Dashbot},
-  Data: A{
+  Data: TestData{
     Test: "data",
   }
 }
