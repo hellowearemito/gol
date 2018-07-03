@@ -1,4 +1,4 @@
-package golr
+package gol
 
 import (
 	"github.com/go-ozzo/ozzo-validation"

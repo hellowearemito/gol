@@ -1,4 +1,4 @@
-package golr
+package gol
 
 import (
 	"strings"
