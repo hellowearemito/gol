@@ -1,8 +1,11 @@
 package golr
 
 import (
+	"bytes"
 	"encoding/json"
-	"fmt"
+	"errors"
+	"net/http"
+	"net/url"
 
 	"github.com/gomodule/redigo/redis"
 )
@@ -19,8 +22,7 @@ type Logger interface {
 
 // logger represents the logger.
 type logger struct {
-	config     Config
-	connection redis.Conn
+	config Config
 }
 
 // NewLogger returns a new logger struct.
@@ -30,14 +32,8 @@ func NewLogger(config Config) (Logger, error) {
 		return nil, err
 	}
 
-	connection, err := redis.Dial(tcp, fmt.Sprintf("%v:%v", config.Host, config.Port))
-	if err != nil {
-		return nil, err
-	}
-
 	return &logger{
-		config:     config,
-		connection: connection,
+		config: config,
 	}, nil
 }
 
@@ -53,5 +49,34 @@ func (l *logger) Log(message Message) error {
 		return err
 	}
 
-	return l.connection.Send(rPush, l.config.ListName, data)
+	connection, err := redis.Dial(tcp, l.config.Redis.Domain())
+	if err == nil {
+		return connection.Send(rPush, l.config.ListName, data)
+	}
+
+	if l.config.LogService == nil {
+		return errors.New("redis connection does not work and LogService config is not specified")
+	}
+
+	uri := url.URL{
+		Scheme: "https",
+		Host:   l.config.LogService.Domain(),
+		Path:   l.config.LogService.Path,
+	}
+	body := bytes.NewReader(data)
+	req, err := http.NewRequest(http.MethodPost, uri.String(), body)
+	if err != nil {
+		return err
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New("the logger could not communicate with log service")
+	}
+
+	return nil
 }
