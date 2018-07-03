@@ -1,9 +1,8 @@
 package gol
 
-import (
-	"github.com/go-ozzo/ozzo-validation"
-)
+import "github.com/go-ozzo/ozzo-validation"
 
+// Types and targets
 const (
 	System        Type = "system"
 	Communication Type = "communication"
@@ -12,6 +11,8 @@ const (
 	Dashbot  Target = "dashbot"
 	Chatbase Target = "chatbase"
 	Elastic  Target = "elastic"
+	Sentry   Target = "sentry"
+	File     Target = "file"
 
 	Incoming Source = "incoming"
 	Outgoing Source = "outgoing"
