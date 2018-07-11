@@ -39,6 +39,7 @@ func (s Service) Validate() error {
 	)
 }
 
+// Domain returns the service's domain.
 func (s Service) Domain() string {
 	return strings.Join([]string{s.Host, s.Port}, ":")
 }

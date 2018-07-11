@@ -51,14 +51,18 @@ type Source string
 
 // Message represents the log's message structure.
 type Message struct {
-	Type       Type
-	Source     *Source
-	Targets    []Target
-	Data       interface{}
-	Intent     *Intent
-	NotHandled bool
-	SessionID  *string
-	Version    *string
+	Type        Type
+	Source      *Source
+	Targets     []Target
+	RecipientID *string
+	SenderID    *string
+	AccessToken *string
+	SessionID   *string
+	MessageID   *string
+	Data        interface{}
+	Intent      *Intent
+	NotHandled  bool
+	Version     *string
 }
 
 // Validate validates the message.
