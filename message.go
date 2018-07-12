@@ -22,6 +22,26 @@ const (
 
 	Incoming Source = "incoming"
 	Outgoing Source = "outgoing"
+
+	Facebook Platform = "Facebook"
+	SMS      Platform = "SMS"
+	Web      Platform = "Web"
+	Android  Platform = "Android"
+	IOS      Platform = "iOS"
+	Actions  Platform = "Actions"
+	Alexa    Platform = "Alexa"
+	Cortana  Platform = "Cortana"
+	Kik      Platform = "Kik"
+	Skype    Platform = "Skype"
+	Twitter  Platform = "Twitter"
+	Viber    Platform = "Viber"
+	Telegram Platform = "Telegram"
+	Slack    Platform = "Slack"
+	WhatsApp Platform = "WhatsApp"
+	WeChat   Platform = "WeChat"
+	Line     Platform = "Line"
+	Kakao    Platform = "Kakao"
+	RBM      Platform = "RBM"
 )
 
 var (
@@ -55,10 +75,14 @@ type Target string
 // Source represents the message's source (incoming & outgoing)
 type Source string
 
+// Platform represents the message's platform.
+type Platform string
+
 // Message represents the log's message structure.
 type Message struct {
 	Type        Type
 	Source      *Source
+	Platform    *Platform
 	Targets     []Target
 	RecipientID *string
 	SenderID    *string
@@ -101,8 +125,14 @@ func (m Message) Validate() error {
 				s, _ := value.(Source)
 				t := m.Type
 
-				if t == Communication && (s != Incoming || s != Outgoing) {
-					return errors.New("the source is required for the communication type")
+				if t == Communication {
+					if s != Incoming || s != Outgoing {
+						return errors.New("the source is required for the communication type")
+					}
+
+					if m.Platform == nil {
+						return errors.New("the platform is required for the communication type")
+					}
 				}
 
 				return nil
