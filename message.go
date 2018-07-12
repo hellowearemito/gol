@@ -1,6 +1,10 @@
 package gol
 
-import "github.com/go-ozzo/ozzo-validation"
+import (
+	"github.com/go-ozzo/ozzo-validation"
+
+	"github.com/pkg/errors"
+)
 
 // Types and targets
 const (
@@ -65,6 +69,19 @@ type Message struct {
 	Version     *string
 }
 
+func (m *Message) InTarget(target Target) bool {
+	if len(m.Targets) == 0 {
+		return false
+	}
+
+	for _, t := range m.Targets {
+		if t == target {
+			return true
+		}
+	}
+	return false
+}
+
 // Validate validates the message.
 func (m Message) Validate() error {
 	return validation.ValidateStruct(
@@ -77,11 +94,63 @@ func (m Message) Validate() error {
 		validation.Field(
 			&m.Source,
 			validation.In(Sources...),
+			validation.By(func(value interface{}) error {
+				s, _ := value.(Source)
+				t := m.Type
+
+				if t == Communication && (s != Incoming || s != Outgoing) {
+					return errors.New("the source is required for the communication type")
+				}
+
+				return nil
+			}),
 		),
 		validation.Field(
 			&m.Targets,
 			validation.Required,
 			validation.In(Targets...),
+			validation.By(func(value interface{}) error {
+				var err error
+				t := m.Type
+
+				err = errors.New("the target is not valid for: " + string(t) + " type")
+				switch t {
+				case System:
+					if m.InTarget(File) || m.InTarget(Sentry) || m.InTarget(Elastic) {
+						return err
+					}
+				case Communication:
+					if m.InTarget(Dashbot) || m.InTarget(Chatbase) || m.InTarget(Elastic) {
+						return err
+					}
+
+					if m.RecipientID == nil {
+						return errors.New("the recipient id is required")
+					}
+
+					if m.SenderID == nil {
+						return errors.New("the sender id is required")
+					}
+
+					if m.AccessToken == nil {
+						return errors.New("the access token is required")
+					}
+
+					if m.SessionID == nil {
+						return errors.New("the session id is required")
+					}
+
+					if m.MessageID == nil {
+						return errors.New("the message id is required")
+					}
+				case Audit:
+					if m.InTarget(Elastic) {
+						return err
+					}
+				}
+
+				return nil
+			}),
 		),
 		validation.Field(
 			&m.Data,
