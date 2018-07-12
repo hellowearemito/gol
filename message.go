@@ -1,6 +1,8 @@
 package gol
 
 import (
+	"time"
+
 	"github.com/go-ozzo/ozzo-validation"
 
 	"github.com/pkg/errors"
@@ -63,6 +65,7 @@ type Message struct {
 	AccessToken *string
 	SessionID   *string
 	MessageID   *string
+	SentTime    time.Time
 	Data        interface{}
 	Intent      *Intent
 	NotHandled  bool
@@ -154,6 +157,10 @@ func (m Message) Validate() error {
 		),
 		validation.Field(
 			&m.Data,
+			validation.Required,
+		),
+		validation.Field(
+			&m.SentTime,
 			validation.Required,
 		),
 	)
