@@ -17,6 +17,7 @@ const (
 	Dashbot  Target = "dashbot"
 	Chatbase Target = "chatbase"
 	Elastic  Target = "elastic"
+	Logstash Target = "logstash"
 	Sentry   Target = "sentry"
 	File     Target = "file"
 
