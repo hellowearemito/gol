@@ -81,20 +81,20 @@ type Platform string
 
 // Message represents the log's message structure.
 type Message struct {
-	Type        Type
-	Source      *Source
-	Platform    *Platform
-	Targets     []Target
-	RecipientID *string
-	SenderID    *string
-	AccessToken *string
-	SessionID   *string
-	MessageID   *string
-	SentTime    time.Time
-	Data        interface{}
-	Intent      *Intent
-	NotHandled  bool
-	Version     *string
+	Type        Type        `json:"type"`
+	Source      *Source     `json:"source"`
+	Platform    *Platform   `json:"platform"`
+	Targets     []Target    `json:"targets"`
+	RecipientID *string     `json:"recipient_id"`
+	SenderID    *string     `json:"sender_id"`
+	AccessToken *string     `json:"access_token"`
+	SessionID   *string     `json:"session_id"`
+	MessageID   *string     `json:"message_id"`
+	SentTime    time.Time   `json:"sent_time"`
+	Data        interface{} `json:"data"`
+	Intent      *Intent     `json:"intent"`
+	NotHandled  bool        `json:"not_handled"`
+	Version     *string     `json:"version"`
 }
 
 func (m *Message) InTarget(target Target) bool {
