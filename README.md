@@ -1,43 +1,48 @@
 # Gol
 
-Gol is a logger what send the given type of message to redis. We can define the targets. After the sending an other service can decode/encode and send the given messages to the correct platform.
+Gol is a logger what send the given message to redis. You can define message targets targets. After the sending an other service can decode/encode and send the given messages to the correct platform.
 
-If the package could not connect to redis, then it tries to forward the message to the fallback service. The fallback service is not a require config field.
+If the package can't connect to redis, it tries to send the message to the fallback service via HTTP post request. Fallback service is not a required.
 
 ## Getting Started
 
-### Installing
+### Installing 
 
 ```
-dep ensure -add github.com/hellowearemito/gol
+go get -u github.com/hellowearemito/gol
 ```
+> or use dependency manager ❤️
 
 ## Usage
 
 ```go
-logService := &Service{
+logService := &gol.Service{
   Host: "localhost",
   Port: "5678",
   Path: "/logger/manager"
 }
-config := Config{
+config := gol.Config{
   ListName: "log_messages",
-  Redis: Service{
-    Host: "localhost",
-    Port: "1234"
-  },
   LogService: &logService,
 }
 
-logger, err := NewLogger(config)
+pool := &redis.Pool{
+  MaxIdle:     3,
+  IdleTimeout: 240 * time.Second,
+  Dial: func() (redis.Conn, error) {
+    return redis.Dial("tcp", "localhost:6379")
+  },
+}
+
+logger, err := gol.NewLogger(config, pool, someFallbacklogger, otherFallbackLogger)
 if err != nil {
   panic(err)
 }
 
-message := Message{
-  Type: Communication,
-  Targets: []Target{Dashbot},
-  Data: TestData{
+message := gol.Message{
+  Type: gol.Communication,
+  Targets: []gol.Target{gol.Dashbot},
+  Data: struct{Test string}{
     Test: "data",
   }
 }
@@ -57,8 +62,11 @@ if err != nil{
 ### Targets
 
 * Dashbot
-* Elastic
 * Chatbase
+* Elastic
+* Logstash
+* Sentry
+* File
 
 ## Built With
 
@@ -69,6 +77,7 @@ if err != nil{
 ## Authors
 
 * **Bence Patyi** - *Mito* - [bpatyi](https://github.com/bpatyi)
+* **Attila Sumi** - *Mito* - [sumia01](https://github.com/sumia01)
 
 ## License
 
