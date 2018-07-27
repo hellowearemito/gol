@@ -57,9 +57,10 @@ func (l *logger) Log(message Message) {
 		l.fallbackLog("json.Marshal():", err, message)
 	}
 
-	err = l.redisPool.Get().Send(rPush, l.config.ListName, data)
+	conn := l.redisPool.Get()
+	err = conn.Send(rPush, l.config.ListName, data)
 	if err == nil {
-		if err = l.redisPool.Close(); err != nil {
+		if err = conn.Close(); err != nil {
 			l.fallbackLog("l.redisPool.Close():", err)
 		}
 		return
