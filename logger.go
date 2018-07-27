@@ -61,12 +61,12 @@ func (l *logger) Log(message Message) {
 	err = conn.Send(rPush, l.config.ListName, data)
 	if err == nil {
 		if err = conn.Close(); err != nil {
-			l.fallbackLog("l.redisPool.Close():", err)
+			l.fallbackLog("conn.Close():", err)
 		}
 		return
 	}
 
-	l.fallbackLog("l.redisPool.Get().Send():", err, string(data))
+	l.fallbackLog("conn.Send():", err, string(data))
 
 	if l.config.LogService == nil {
 		l.fallbackLog("redis connection is not working and LogService config is not defined:", err, string(data))
