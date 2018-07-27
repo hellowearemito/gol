@@ -50,11 +50,13 @@ func (l *logger) Log(message Message) {
 	err := message.Validate()
 	if err != nil {
 		l.fallbackLog("message.Validate():", err, message)
+		return
 	}
 
 	data, err := json.Marshal(message)
 	if err != nil {
 		l.fallbackLog("json.Marshal():", err, message)
+		return
 	}
 
 	conn := l.redisPool.Get()
