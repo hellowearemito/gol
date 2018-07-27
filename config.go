@@ -9,7 +9,6 @@ import (
 // Config represents the redis configuration for golw logger.
 type Config struct {
 	ListName   string
-	Redis      Service
 	LogService *Service
 }
 
@@ -18,7 +17,6 @@ func (c Config) Validate() error {
 	return validation.ValidateStruct(
 		&c,
 		validation.Field(&c.ListName, validation.Required),
-		validation.Field(&c.Redis, validation.Required),
 		validation.Field(&c.LogService),
 	)
 }
