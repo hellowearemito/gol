@@ -16,7 +16,6 @@ const (
 
 	Dashbot  Target = "dashbot"
 	Chatbase Target = "chatbase"
-	Elastic  Target = "elastic"
 	Logstash Target = "logstash"
 	Sentry   Target = "sentry"
 	File     Target = "file"
@@ -57,7 +56,9 @@ var (
 	Targets = []interface{}{
 		Dashbot,
 		Chatbase,
-		Elastic,
+		Logstash,
+		Sentry,
+		File,
 	}
 
 	// Sources contains the sources of message.
@@ -178,7 +179,7 @@ func (m Message) Validate() error {
 						return errors.New("the message id is required")
 					}
 				case Audit:
-					if m.InTarget(Elastic) {
+					if !m.InTarget(Logstash) {
 						return err
 					}
 				}
