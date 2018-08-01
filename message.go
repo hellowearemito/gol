@@ -60,6 +60,14 @@ var (
 		Sentry,
 		File,
 	}
+	// Targets contains the targets of message.
+	targetsNorm = []string{
+		string(Dashbot),
+		string(Chatbase),
+		string(Logstash),
+		string(Sentry),
+		string(File),
+	}
 
 	// Sources contains the sources of message.
 	Sources = []interface{}{
@@ -143,7 +151,14 @@ func (m Message) Validate() error {
 		validation.Field(
 			&m.Targets,
 			validation.Required,
-			validation.In(Targets...),
+			validation.By(func(value interface{}) error {
+				for _, t := range m.Targets {
+					if !in(targetsNorm, string(t)) {
+						return errors.New("must be a valid value")
+					}
+				}
+				return nil
+			}),
 			validation.By(func(value interface{}) error {
 				var err error
 				t := m.Type
@@ -151,11 +166,11 @@ func (m Message) Validate() error {
 				err = errors.New("the target is not valid for: " + string(t) + " type")
 				switch t {
 				case System:
-					if m.InTarget(File) || m.InTarget(Sentry) || m.InTarget(Logstash) {
+					if !m.InTarget(File) && !m.InTarget(Sentry) && !m.InTarget(Logstash) {
 						return err
 					}
 				case Communication:
-					if m.InTarget(Dashbot) || m.InTarget(Chatbase) || m.InTarget(Logstash) {
+					if !m.InTarget(Dashbot) && !m.InTarget(Chatbase) && !m.InTarget(Logstash) {
 						return err
 					}
 
@@ -226,4 +241,14 @@ func (i Input) Validate() error {
 		validation.Field(&i.Name, validation.Required),
 		validation.Field(&i.Value, validation.Required),
 	)
+}
+
+func in(array []string, value string) bool {
+	for _, v := range array {
+		if v == value {
+			return true
+		}
+	}
+
+	return false
 }
