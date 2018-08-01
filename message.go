@@ -151,11 +151,11 @@ func (m Message) Validate() error {
 				err = errors.New("the target is not valid for: " + string(t) + " type")
 				switch t {
 				case System:
-					if m.InTarget(File) || m.InTarget(Sentry) || m.InTarget(Elastic) {
+					if m.InTarget(File) || m.InTarget(Sentry) || m.InTarget(Logstash) {
 						return err
 					}
 				case Communication:
-					if m.InTarget(Dashbot) || m.InTarget(Chatbase) || m.InTarget(Elastic) {
+					if m.InTarget(Dashbot) || m.InTarget(Chatbase) || m.InTarget(Logstash) {
 						return err
 					}
 
