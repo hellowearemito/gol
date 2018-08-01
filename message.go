@@ -19,6 +19,7 @@ const (
 	Logstash Target = "logstash"
 	Sentry   Target = "sentry"
 	File     Target = "file"
+	Fallback Target = "fallback"
 
 	Incoming Source = "incoming"
 	Outgoing Source = "outgoing"
@@ -59,6 +60,7 @@ var (
 		Logstash,
 		Sentry,
 		File,
+		Fallback,
 	}
 	// Targets contains the targets of message.
 	targetsNorm = []string{
@@ -67,6 +69,7 @@ var (
 		string(Logstash),
 		string(Sentry),
 		string(File),
+		string(Fallback),
 	}
 
 	// Sources contains the sources of message.
